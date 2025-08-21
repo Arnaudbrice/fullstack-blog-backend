@@ -19,7 +19,8 @@ app.use(express.static(path.join(import.meta.dirname, "public")));
 
 const sequelize = new Sequelize(process.env.PG_URI);
 //id, author, content, cover, date
-const Blog = sequelize.define("Blog", {
+// Define a Post Model representing a table named Posts in the database
+const Post = sequelize.define("Post", {
   author: {
     type: DataTypes.STRING,
     allowNull: false
@@ -39,7 +40,7 @@ const Blog = sequelize.define("Blog", {
   }
 });
 
-await Blog.sync();
+await Post.sync();
 
 app.get("/", async (req, res) => {
   try {
@@ -50,33 +51,35 @@ app.get("/", async (req, res) => {
   }
 });
 
-// GET /blogs
-app.get("/blogs", async (req, res) => {
+// GET /posts
+app.get("/posts", async (req, res) => {
   try {
-    const blogs = await Blog.findAll();
-    res.json(blogs);
+    const posts = await Post.findAll();
+
+    console.log("posts", posts);
+    res.json(posts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET /blogs/:id
-app.get("/blogs/:id", async (req, res) => {
+// GET /posts/:id
+app.get("/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await Blog.findByPk(id);
-    if (!blog) {
-      res.status(404).json({ message: "Blog not found" });
+    const post = await Post.findByPk(id);
+    if (!post) {
+      res.status(404).json({ message: "Post not found" });
       return;
     }
-    res.json(blog);
+    res.json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// POST /blogs
-app.post("/blogs", async (req, res) => {
+// POST /posts
+app.post("/posts", async (req, res) => {
   try {
     const { author, content, cover, date } = req.body;
 
@@ -84,17 +87,17 @@ app.post("/blogs", async (req, res) => {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
-    const blog = await Blog.create({ author, content, cover, date });
+    const post = await Post.create({ author, content, cover, date });
 
-    res.status(201).json(blog);
+    res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// PUT /blogs/:id
+// PUT /posts/:id
 
-app.put("/blogs/:id", async (req, res) => {
+app.put("/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -106,34 +109,34 @@ app.put("/blogs/:id", async (req, res) => {
       return;
     }
 
-    const [rowCount, updatedBlogs] = await Blog.update(
+    const [rowCount, updatedPosts] = await Post.update(
       { author, content, cover, date },
       { where: { id: id }, returning: true }
     );
 
-    console.log("updatedBlogs", updatedBlogs);
+    console.log("updatedPosts", updatedPosts);
     if (!rowCount) {
-      res.status(404).json({ message: "Blog not found" });
+      res.status(404).json({ message: "Post not found" });
       return;
     }
-    const updatedBlog = updatedBlogs[0];
-    res.status(200).json(updatedBlog);
+    const updatedPost = updatedPosts[0];
+    res.status(200).json(updatedPost);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// DELETE /blogs/:id
-app.delete("/blogs/:id", async (req, res) => {
+// DELETE /posts/:id
+app.delete("/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const rowCount = await Blog.destroy({ where: { id: id } });
+    const rowCount = await Post.destroy({ where: { id: id } });
     if (!rowCount) {
-      res.status(404).json({ message: "Blog not found" });
+      res.status(404).json({ message: "Post not found" });
       return;
     }
-    res.status(204).json({ message: "Blog deleted successfully" });
+    res.status(204).json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
