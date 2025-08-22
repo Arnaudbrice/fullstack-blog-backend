@@ -29,14 +29,14 @@ export const getPostById = async (req, res) => {
 // POST /posts
 export const createPost = async (req, res) => {
   try {
-    const { author, content, cover, date } = req.body;
+    const { author, title, content, cover, date } = req.body;
 
-    if (!author || !content || !cover || !date) {
+    if (!title || !content || !cover) {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
-    const post = await Post.create({ author, content, cover, date });
-
+    const post = await Post.create({ author, title, content, cover, date });
+    console.log("created Post", post);
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -49,16 +49,16 @@ export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { author, content, cover, date } = req.body;
+    const { author, title, content, cover, date } = req.body;
     console.log("req.body", req.body);
 
-    if (!author || !content || !cover || !date) {
+    if (!title || !content) {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
 
     const [rowCount, updatedPosts] = await Post.update(
-      { author, content, cover, date },
+      { title, content },
       { where: { id: id }, returning: true }
     );
 
@@ -68,7 +68,8 @@ export const updatePost = async (req, res) => {
       return;
     }
     const updatedPost = updatedPosts[0];
-    res.status(200).json(updatedPost);
+    console.log("updatedPost", updatedPost);
+    res.status(200).json(updatedPost.dataValues);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
