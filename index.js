@@ -29,6 +29,7 @@ app.get("/", async (req, res) => {
 app.use("/posts", postRouter);
 
 const port = process.env.PORT || 3000;
+/*starts the Express server and tells it to listen for incoming requests on a specific port. */
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}!`);
 });

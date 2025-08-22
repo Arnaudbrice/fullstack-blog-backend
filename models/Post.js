@@ -5,6 +5,10 @@ import sequelize from "../db/index.js";
 const Post = sequelize.define("Post", {
   author: {
     type: DataTypes.STRING,
+    allowNull: true
+  },
+  title: {
+    type: DataTypes.STRING,
     allowNull: false
   },
   content: {
@@ -12,13 +16,13 @@ const Post = sequelize.define("Post", {
     allowNull: false
   },
   cover: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false
   },
   date: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-    allowNull: false
+    allowNull: null
   }
 });
 
