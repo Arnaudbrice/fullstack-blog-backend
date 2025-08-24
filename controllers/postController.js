@@ -29,25 +29,13 @@ export const getPostById = async (req, res) => {
 // POST /posts
 export const createPost = async (req, res) => {
   try {
-    const { author, title, content, date } = req.body;
-    // console.log("req.file", req.file);
-    const cover = req.file;
+    const { author, title, content, cover, date } = req.body;
+
     if (!title || !content || !cover) {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
-
-    const coverUrl = cover
-      ? `${req.protocol}://${req.get("host")}/uploads/${cover.filename}`
-      : null;
-    const post = await Post.create({
-      author,
-      title,
-      content,
-      // Send the file path
-      cover: coverUrl,
-      date
-    });
+    const post = await Post.create({ author, title, content, cover, date });
     console.log("created Post", post);
     res.status(201).json(post);
   } catch (error) {
